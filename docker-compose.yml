@@ -7,11 +7,15 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
     ports:
+      # Host Port: Container port
       - "${POSTGRES_PORT}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test:
+        ["CMD-SHELL",
+        "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -30,10 +34,10 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
     command: >-
-      sh -c 'if [ "$NODE_ENV" = "Development" ]; then
-        npm install && npm run dev;
-      else
-        npm install --omit=dev && npm start;
+      sh -c 'if [ "$$NODE_ENV" = 
+      "development" ]; then
+      npm install && npm run dev;
+      else npm install --omit=dev && npm start;
       fi'
     ports:
       - "${BACKEND_PORT}:5000"
@@ -59,4 +63,3 @@ volumes:
   pgdata:
   backend_node_modules:
   frontend_node_modules:
-  
