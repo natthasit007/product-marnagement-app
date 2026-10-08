@@ -1,10 +1,20 @@
-const API_URL = `${import.meta.env.VITE_API_URL}/api/products`;
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL?.replace(/\/+$/, "") ?? "http://localhost:5000";
+const API_URL = `${API_BASE_URL}/api/products`;
 
 const request = async (url, options = {}) => {
   const response = await fetch(url, options);
   if (!response.ok) {
-    const message = await response.text();
+    const contentType = response.headers.get("content-type") ?? "";
+    const body = contentType.includes("application/json")
+      ? await response.json()
+      : await response.text();
+    const message =
+      typeof body === "string" ? body : body.message || body.error;
     throw new Error(message || "เกิดข้อผิดพลาดในการเชื่อมต่อ");
+  }
+  if (response.status === 204) {
+    return null;
   }
   return response.json();
 };
