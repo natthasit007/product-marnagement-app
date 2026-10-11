@@ -5,10 +5,12 @@ import { connectDB } from "./config/database.js";
 import productRouter from "./router/productRouter.js";
 
 dotenv.config();
-const PORT = process.env.BACKEND_PORT;
+const PORT = process.env.PORT || process.env.BACKEND_PORT || 5000;
 
 const app = express();
-app.use(cors());
+
+const allowedOrigin = process.env.FRONTEND_URL;
+app.use(cors(allowedOrigin ? { origin: allowedOrigin } : undefined));
 app.use(express.json());
 
 app.get("/", (req, res) => {
